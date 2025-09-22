@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Indian History Quiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    #resultOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(8px);
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 2rem;
+      z-index: 9999;
+      padding: 2rem;
+    }
+
+    .navbar-custom {
+      background-color: #4b0082;
+    }
+
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link {
+      color: #fff;
+    }
+
+    .warning-box {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">📚 History Quiz</a>
+  </div>
+</nav><br><br>
+
+<div class="container py-5">
+  <div class="card shadow">
+    <div class="card-body">
+      <h1 class="card-title text-center mb-4">Indian History Quiz</h1>
+      <form id="quizForm">
+        <div id="quizCarousel" class="carousel slide" data-bs-interval="false">
+          <div class="carousel-inner">
+
+            <!-- Question 1 -->
+            <div class="carousel-item active">
+              <div class="mb-4">
+                <p><strong>1. Who was the first Governor-General of India?</strong></p>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q1" value="correct"> Warren Hastings</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q1" value="wrong"> Lord Mountbatten</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q1" value="wrong"> Robert Clive</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q1" value="wrong"> Lord Dalhousie</div>
+                <div class="warning-box" id="warning1">⚠️ Please select an option to continue.</div>
+              </div>
+              <button class="btn btn-primary" type="button" onclick="goToNextSlide(0)">Next</button>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="carousel-item">
+              <div class="mb-4">
+                <p><strong>2. The Battle of Plassey was fought in:</strong></p>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q2" value="correct"> 1757</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q2" value="wrong"> 1764</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q2" value="wrong"> 1857</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q2" value="wrong"> 1773</div>
+                <div class="warning-box" id="warning2">⚠️ Please select an option to continue.</div>
+              </div>
+              <button class="btn btn-secondary me-2" type="button" data-bs-target="#quizCarousel" data-bs-slide="prev">Previous</button>
+              <button class="btn btn-primary" type="button" onclick="goToNextSlide(1)">Next</button>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="carousel-item">
+              <div class="mb-4">
+                <p><strong>3. Who led the Salt March in 1930?</strong></p>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q3" value="correct"> Mahatma Gandhi</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q3" value="wrong"> Jawaharlal Nehru</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q3" value="wrong"> Subhas Chandra Bose</div>
+                <div class="form-check"><input class="form-check-input" type="radio" name="q3" value="wrong"> Sardar Patel</div>
+                <div class="warning-box" id="warning3">⚠️ Please select an option to continue.</div>
+              </div>
+              <button class="btn btn-secondary me-2" type="button" data-bs-target="#quizCarousel" data-bs-slide="prev">Previous</button>
+              <button class="btn btn-success" type="button" onclick="calculateScore()">Submit Quiz</button>
+            </div>
+
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Result Overlay -->
+<div id="resultOverlay">
+  <div id="resultText"></div>
+  <button class="btn btn-light mt-4" onclick="closeOverlay()">Close</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function goToNextSlide(index) {
+  const quizForm = document.getElementById("quizForm");
+  const questionName = "q" + (index + 1);
+  const selected = quizForm.querySelector(`input[name="${questionName}"]:checked`);
+  const warning = document.getElementById("warning" + (index + 1));
+
+  if (!selected) {
+    warning.style.display = "block";
+  } else {
+    warning.style.display = "none";
+    const carousel = bootstrap.Carousel.getInstance(document.getElementById("quizCarousel")) ||
+                     new bootstrap.Carousel(document.getElementById("quizCarousel"));
+    carousel.next();
+  }
+}
+
+function calculateScore() {
+  const form = document.getElementById('quizForm');
+  const questionGroups = new Set();
+  const inputs = form.querySelectorAll('input[type="radio"]');
+
+  inputs.forEach(input => {
+    questionGroups.add(input.name);
+  });
+
+  let score = 0;
+  let unanswered = [];
+
+  questionGroups.forEach(name => {
+    const radios = form.querySelectorAll(`input[name="${name}"]`);
+    let answered = false;
+
+    radios.forEach(radio => {
+      if (radio.checked) {
+        answered = true;
+        if (radio.value === "correct") {
+          score++;
+        }
+      }
+    });
+
+    if (!answered) {
+      unanswered.push(name);
+    }
+  });
+
+  if (unanswered.length > 0) {
+    alert("⚠️ Please answer all questions before submitting.");
+    return;
+  }
+
+  const resultText = document.getElementById('resultText');
+  resultText.innerHTML = `✅ You scored <strong>${score}</strong> out of <strong>${questionGroups.size}</strong>.`;
+
+  const overlay = document.getElementById('resultOverlay');
+  overlay.style.display = 'flex';
+}
+
+function closeOverlay() {
+  document.getElementById('resultOverlay').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
